@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include <glad/glad.h>
@@ -69,29 +68,22 @@ public:
 private:
     GLuint _id;
 
+    // from ChatGPT
     static std::string readFile(const std::string& path) {
-        // std::ifstream file(path);
-        //
-        // if (!file.is_open()) {
-        //     std::cerr << "Failed to open shader: "
-        //               << path << "\n";
-        // }
-        //
-        // std::stringstream buffer;
-        // buffer << file.rdbuf();
-        //
-        // return buffer.str();
         std::ifstream file(path);
-        std::string str;
-        std::string file_contents;
-        while (std::getline(file, str))
-        {
-            file_contents += str;
-            file_contents.push_back('\n');
+
+        if (!file.is_open()) {
+            std::cerr << "Failed to open shader: "
+                      << path << "\n";
         }
-        return file_contents;
+
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+
+        return buffer.str();
     }
 
+    // from ChatGPT
     static void checkCompileErrors (const GLuint shader, const std::string& type) {
         GLint success;
         GLchar infoLog[1024];
