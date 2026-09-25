@@ -51,6 +51,7 @@ public:
         glDeleteShader(fragmentShader);
     }
 
+    // has to be used before setting any uniforms because glUniformX works on the currently active shader program
     void use () const {
         glUseProgram(_id);
     }
