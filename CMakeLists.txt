@@ -21,6 +21,7 @@ target_include_directories(MyOpenGLProject PRIVATE
 
 target_link_libraries(MyOpenGLProject
         PRIVATE
+        ${OpenCV_LIBS}
         OpenGL::GL
         glfw
 )

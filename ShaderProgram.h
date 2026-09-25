@@ -66,6 +66,11 @@ public:
         glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &value[0][0]);
     }
 
+    void setInt1 (const std::string& varName, const int& value) const {
+        const GLint varId = glGetUniformLocation(_id, varName.c_str());
+        glUniform1i(varId, value);
+    }
+
 private:
     GLuint _id;
 
