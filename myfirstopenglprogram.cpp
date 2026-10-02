@@ -137,7 +137,11 @@ int main() {
     cv::Mat filtered_frame;
     bool filter_active = false;
 
-    const std::vector kernel_vec = {1.0/16, 2.0/16, 1.0/16, 2.0/16, 4.0/16, 2.0/16, 1.0/16, 2.0/16, 1.0/16};
+    const std::vector kernel_vec = {
+        -1.0/2, -1.0, -1.0/2,
+        0.0, 0.0, 0.0,
+        1.0/2, 1.0, 1.0/2
+    };
     const cv::Mat gaussian_blur = cv::Mat(kernel_vec).reshape(1, 3);
 
     std::vector<float> camera_canvas = {
@@ -286,10 +290,12 @@ int main() {
         // draw cube ===================================================================================================
         glEnable(GL_DEPTH_TEST);
 
-
-        theta += 0.01;
-        if (theta >= 2 * M_PI) {
-            theta = 0.0;
+        // press P to pause rotation, exercise demands simple interaction
+        if (glfwGetKey(window, GLFW_KEY_P) != GLFW_PRESS) {
+            theta += 0.01;
+            if (theta >= 2 * M_PI) {
+                theta = 0.0;
+            }
         }
 
         glBindVertexArray(cube_VAO);
