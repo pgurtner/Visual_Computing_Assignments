@@ -15,6 +15,10 @@ add_executable(MyOpenGLProject
         ShaderProgram.h
 )
 
+add_executable(CameraCalibration
+        calibration.cpp
+)
+
 target_include_directories(MyOpenGLProject PRIVATE
         external/glad/include
 )
@@ -26,9 +30,20 @@ target_link_libraries(MyOpenGLProject
         glfw
 )
 
+target_link_libraries(CameraCalibration
+        PRIVATE
+        ${OpenCV_LIBS}
+)
+
 
 add_custom_command(TARGET MyOpenGLProject POST_BUILD # workaround for clion
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/shaders"
         "$<TARGET_FILE_DIR:MyOpenGLProject>/shaders"
+)
+
+add_custom_command(TARGET CameraCalibration POST_BUILD # workaround for clion
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/images"
+        "$<TARGET_FILE_DIR:CameraCalibration>/images"
 )

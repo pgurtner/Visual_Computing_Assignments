@@ -14,3 +14,5 @@ cmake -B ./build
 # usage
 * press P to pause rotation (simple interaction)
 * press F to use the webcam filter
+
+# THIS IS FINAL ASSIGNMENT 1
