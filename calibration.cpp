@@ -1,9 +1,18 @@
 //
 // Created by uni on 10/23/26.
 //
+#include <iostream>
+#include <vector>
 #include <opencv2/opencv.hpp>
 
-int main () {
+int main() {
+    /** A2.1 todo
+     * save and reload the resulting calibration parameters;?? just store the numbers if they ask
+     * evaluate whether the calibration result is reasonable; -> check rms
+     */
+    const int displayIndex = 11;
+
+    // calibration ==========================================================
     const cv::Size boardSize(9, 6);
 
     // =================================================================
@@ -77,15 +86,62 @@ int main () {
         translationVectors
     );
 
-    std::cout << "image size: " << imageSize << '\n';
+    cv::Mat image = cv::imread(imageFiles[displayIndex]);
+    const int frame_width = image.cols;
+    const int frame_height = image.rows;
 
-    std::cout << "\nCamera Matrix K:\n"
-          << cameraMatrix << '\n';
+    std::vector<cv::Point3f> cubePoints = {
+        {0, 0, 0},
+        {1, 0, 0},
+        {1, 1, 0},
+        {0, 1, 0},
+        {0, 0, -1},
+        {1, 0, -1},
+        {1, 1, -1},
+        {0, 1, -1}
+    };
 
-    std::cout << "\nDistortion Coefficients:\n"
-              << distortionCoefficients << '\n';
+    std::vector<cv::Point2f> projected;
 
-    std::cout << "\nRMS Reprojection Error: "
-              << rms << " pixels\n";
+    cv::projectPoints(
+        cubePoints,
+        rotationVectors[displayIndex],
+        translationVectors[displayIndex],
+        cameraMatrix,
+        distortionCoefficients,
+        projected
+    );
 
+    std::vector<std::vector<cv::Point>> lines = {
+        // First square
+        {projected[0], projected[1], projected[2], projected[3]},
+
+        // Second square
+        {projected[4], projected[5], projected[6], projected[7]},
+
+        // Connecting edges
+        {projected[0], projected[4]},
+        {projected[1], projected[5]},
+        {projected[2], projected[6]},
+        {projected[3], projected[7]}
+    };
+
+
+    cv::polylines(
+        image,
+        lines,
+        true,
+        cv::Scalar(0, 255, 0),
+        2
+    );
+
+    cv::imshow("Captured Frame", image);
+    char key = cv::waitKey(1);
+    while (key != 'q') {
+        key = cv::waitKey(1);
+    }
+
+    cv::destroyAllWindows();
+
+    return 0;
 }
