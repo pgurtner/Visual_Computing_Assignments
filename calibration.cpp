@@ -32,7 +32,7 @@ int main() {
     std::vector<std::vector<cv::Point2f>> imagePoints;
 
     std::vector<cv::String> imageFiles;
-    cv::glob("./images/*", imageFiles);
+    cv::glob("./images/calibration/*", imageFiles);
 
     cv::Size imageSize;
 
