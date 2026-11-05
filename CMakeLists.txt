@@ -23,6 +23,10 @@ add_executable(ImageFeatures
         features.cpp
 )
 
+add_executable(Assignment2
+        assignment2.cpp
+)
+
 target_include_directories(MyOpenGLProject PRIVATE
         external/glad/include
 )
@@ -44,6 +48,10 @@ target_link_libraries(ImageFeatures
         ${OpenCV_LIBS}
 )
 
+target_link_libraries(Assignment2
+        PRIVATE
+        ${OpenCV_LIBS}
+)
 
 add_custom_command(TARGET MyOpenGLProject POST_BUILD # workaround for clion
         COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -60,5 +68,11 @@ add_custom_command(TARGET CameraCalibration POST_BUILD # workaround for clion
 add_custom_command(TARGET ImageFeatures POST_BUILD # workaround for clion
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/images"
-        "$<TARGET_FILE_DIR:CameraCalibration>/images"
+        "$<TARGET_FILE_DIR:ImageFeatures>/images"
+)
+
+add_custom_command(TARGET Assignment2 POST_BUILD # workaround for clion
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/images"
+        "$<TARGET_FILE_DIR:Assignment2>/images"
 )

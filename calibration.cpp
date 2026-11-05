@@ -86,6 +86,10 @@ int main() {
         translationVectors
     );
 
+    std::cout << "rms = " << rms << std::endl;
+    std::cout << "camera " << cameraMatrix << std::endl;
+    std::cout << "distortion " << distortionCoefficients << std::endl;
+
     cv::Mat image = cv::imread(imageFiles[displayIndex]);
     const int frame_width = image.cols;
     const int frame_height = image.rows;
