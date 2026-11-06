@@ -10,24 +10,24 @@ int main() {
      * save and reload the resulting calibration parameters;?? just store the numbers if they ask
      * evaluate whether the calibration result is reasonable; -> check rms
      */
-    const int displayIndex = 11;
+    const int displayIndex = 2;
 
     // calibration ==========================================================
-    const cv::Size boardSize(9, 6);
+    const cv::Size boardSize(12, 7);
 
     // =================================================================
     std::vector<cv::Point3f> objectPattern;
     for (int row = 0; row < boardSize.height; row++) {
         for (int col = 0; col < boardSize.width; col++) {
             objectPattern.emplace_back(
-                    col,
-                    row,
+                    col * 2.0, // Todo: do the real world scales belong here?
+                    row * 2.0,
                     0.0f
             );
         }
     }
 
-    // ================================================================
+    // ================================ ================================
     std::vector<std::vector<cv::Point3f>> objectPoints;
     std::vector<std::vector<cv::Point2f>> imagePoints;
 

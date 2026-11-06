@@ -7,17 +7,15 @@
 
 
 int main () {
-    // parameters from lecture images estimated in calibration.cpp
+    // rms was only around 0.72, but ChatGPT said that's still acceptable
     cv::Mat cameraMatrix = (cv::Mat_<double>(3, 3) <<
-        598.0634232224546, 0.0, 276.918352779743,
-        0.0, 597.3329187891565, 376.1875913227537,
+        1165.973932805081, 0.0, 948.4266181668049,
+        0.0, 1169.80170222788, 532.6972746178853,
         0.0, 0.0, 1.0
     );
     cv::Mat distortionCoefficients = (cv::Mat_<double>(1, 5) <<
-        0.2838827432993432, -2.237651967008534, -0.001793477386545204, -0.0005019813358308592, 5.386684456271865
+    0.04695031703360765, 0.0386444578469515, -0.004582798246147291, -0.0004132827740623321, -0.1862409065226672
         );
-
-
 
     auto cam = cv::VideoCapture(0);
     // Check if the webcam was opened successfully
@@ -51,17 +49,26 @@ int main () {
         }
         cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
 
+        cv::Mat left;
+        cv::Mat right;
+        if (reference_height >= grayFrame.rows) {
+            left = ref;
+            right = grayFrame;
+        } else {
+            left = grayFrame;
+            right = ref;
+        }
          cv::Mat paddedFrame(
-            reference_height,
-            grayFrame.cols,
-            grayFrame.type(),
+            left.rows,
+            right.cols,
+            right.type(),
             cv::Scalar(0, 0, 0)
             );
-        int cam_offset = (reference_height - grayFrame.rows) / 2;
-        grayFrame.copyTo(paddedFrame(cv::Rect(
-            0, cam_offset, grayFrame.cols, grayFrame.rows
+        int cam_offset = (left.rows - right.rows) / 2;
+        right.copyTo(paddedFrame(cv::Rect(
+            0, cam_offset, right.cols, right.rows
         )));
-        cv::hconcat(ref, paddedFrame, combined);
+        cv::hconcat(left, paddedFrame, combined);
 
         // features ==========================================================================
         sift->detectAndCompute(grayFrame, cv::noArray(), kps2, desc2);
@@ -162,7 +169,9 @@ int main () {
 
                 // adjust to merged frames
                 for (cv::Point2f& pt : projected) {
-                    pt.x += reference_width;
+                    if (reference_height >= grayFrame.rows) {
+                        pt.x += reference_width;
+                    }
                     pt.y += cam_offset;
                 }
 
