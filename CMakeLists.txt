@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(VCAssignments LANGUAGES C CXX)
 
-find_package(OpenCV REQUIRED)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(OpenCV 4.4 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 

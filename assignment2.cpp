@@ -4,30 +4,33 @@
 #include <iostream>
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include <opencv2/features2d.hpp>
 
 
 int main () {
     // rms was only around 0.72, but ChatGPT said that's still acceptable
     cv::Mat cameraMatrix = (cv::Mat_<double>(3, 3) <<
-        1165.973932805081, 0.0, 948.4266181668049,
-        0.0, 1169.80170222788, 532.6972746178853,
-        0.0, 0.0, 1.0
+        1165.973990268722, 0, 948.4266468945146,
+        0, 1169.801765931403, 532.6972418223444,
+        0, 0, 1
     );
     cv::Mat distortionCoefficients = (cv::Mat_<double>(1, 5) <<
-    0.04695031703360765, 0.0386444578469515, -0.004582798246147291, -0.0004132827740623321, -0.1862409065226672
-        );
+        0.04695053907017958, 0.03864341811123936, -0.004582807611581076, -0.0004132539769253393, -0.1862386637505793        );
 
     auto cam = cv::VideoCapture(0);
     // Check if the webcam was opened successfully
     if (!cam.isOpened()) {
         std::cout << "Error: Could not access the webcam." << std::endl;
         return -1;
-    } else {
-        std::cout << "Webcam accessed successfully!" << std::endl;
     }
+    std::cout << "Webcam accessed successfully!" << std::endl;
 
     // SIFT setup ============================================================
     cv::Mat ref = cv::imread("images/target.png", cv::IMREAD_GRAYSCALE);
+    if (ref.empty()) {
+        std::cerr << "Error: Could not load reference image." << std::endl;
+        return -1;
+    }
     int reference_height = ref.rows;
     int reference_width = ref.cols;
 
@@ -44,8 +47,9 @@ int main () {
 
     while (true) {
         auto ret = cam.read(frame);
-        if (!ret) {
-            std::cout << "Error: Could not capture frame." << std::endl;
+        if (!ret || frame.empty()) {
+            std::cerr << "Error: Could not capture frame." << std::endl;
+            break;
         }
         cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
 
@@ -103,8 +107,10 @@ int main () {
             std::vector<cv::Point3f> objPts;
             std::vector<cv::Point2f> dstPts = pts2;
             // TODO: use actual scaling factors
-            float scaleX_ = 0.005;//0.21/640; //physicalWidth / imageWidth (e.g. 0.21m / 640px)
-            float scaleY_ = 0.005;//0.15/480; //physicalHeight / imageHeight (e.g. 0.15m / 480px)
+            float physicalHeight = 0.065;
+            float physicalWidth = 0.065;
+            float scaleX_ = physicalWidth / reference_width;//0.21/640; //physicalWidth / imageWidth (e.g. 0.21m / 640px)
+            float scaleY_ = physicalHeight / reference_height;//0.15/480; //physicalHeight / imageHeight (e.g. 0.15m / 480px)
             for (const auto& p : pts1)
                 objPts.push_back({
                 p.x * scaleX_, // pixel col → metric X
@@ -145,15 +151,16 @@ int main () {
                 cv::SOLVEPNP_ITERATIVE);
 
                 // draw cube =======================================================================
+                float cube_size = 0.02;
                 std::vector<cv::Point3f> cubePoints = {
                     {0, 0, 0},
-                    {1, 0, 0},
-                    {1, 1, 0},
-                    {0, 1, 0},
-                    {0, 0, -1},
-                    {1, 0, -1},
-                    {1, 1, -1},
-                    {0, 1, -1}
+                    {cube_size, 0, 0},
+                    {cube_size, cube_size, 0},
+                    {0, cube_size, 0},
+                    {0, 0, -cube_size},
+                    {cube_size, 0, -cube_size},
+                    {cube_size, cube_size, -cube_size},
+                    {0, cube_size, -cube_size}
                 };
 
                 std::vector<cv::Point2f> projected;
@@ -171,11 +178,11 @@ int main () {
                 for (cv::Point2f& pt : projected) {
                     if (reference_height >= grayFrame.rows) {
                         pt.x += reference_width;
+                        pt.y += cam_offset;
                     }
-                    pt.y += cam_offset;
                 }
 
-                std::vector<std::vector<cv::Point>> lines = {
+                std::vector<std::vector<cv::Point2f>> lines = {
                     // First square
                     {projected[0], projected[1], projected[2], projected[3]},
 
@@ -189,9 +196,17 @@ int main () {
                     {projected[3], projected[7]}
                 };
 
+                // convert coordinates to int
+                std::vector<std::vector<cv::Point>> intLines(lines.size());
+                for (int i = 0; i < lines.size(); ++i) {
+                    for (const auto& pt: lines[i]) {
+                        intLines[i].emplace_back(cvRound(pt.x), cvRound(pt.y));
+                    }
+                }
+
                 cv::polylines(
                     combined,
-                    lines,
+                    intLines,
                     true,
                     cv::Scalar(0, 255, 0),
                     2

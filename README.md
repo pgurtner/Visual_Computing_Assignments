@@ -17,7 +17,7 @@ cmake --build ./build
 
 ## usage
 * close window by pressing q
-* hold copy of images/target.png into the webcam, then a cube with estimated pose should appear
+* hold copy of images/target.png into the webcam, then a cube with estimated pose should appear. The code expects image side lengths of 6.5 cm
 
 # Assignment 1
 

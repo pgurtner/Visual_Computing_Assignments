@@ -20,8 +20,8 @@ int main() {
     for (int row = 0; row < boardSize.height; row++) {
         for (int col = 0; col < boardSize.width; col++) {
             objectPattern.emplace_back(
-                    col * 2.0, // Todo: do the real world scales belong here?
-                    row * 2.0,
+                    col * 0.02, // Todo: do the real world scales belong here?
+                    row * 0.02,
                     0.0f
             );
         }
@@ -94,15 +94,16 @@ int main() {
     const int frame_width = image.cols;
     const int frame_height = image.rows;
 
+    float cube_size = 0.02;
     std::vector<cv::Point3f> cubePoints = {
         {0, 0, 0},
-        {1, 0, 0},
-        {1, 1, 0},
-        {0, 1, 0},
-        {0, 0, -1},
-        {1, 0, -1},
-        {1, 1, -1},
-        {0, 1, -1}
+        {cube_size, 0, 0},
+        {cube_size, cube_size, 0},
+        {0, cube_size, 0},
+        {0, 0, -cube_size},
+        {cube_size, 0, -cube_size},
+        {cube_size, cube_size, -cube_size},
+        {0, cube_size, -cube_size}
     };
 
     std::vector<cv::Point2f> projected;
