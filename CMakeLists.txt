@@ -5,11 +5,8 @@ find_package(OpenCV REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
-add_executable(MyProject main.cpp)
-target_link_libraries(MyProject PRIVATE ${OpenCV_LIBS})
-
-add_executable(MyOpenGLProject
-        myfirstopenglprogram.cpp
+add_executable(Assignment1
+        assignment1.cpp
         external/glad/src/glad.c
         ShaderProgram.cpp
         ShaderProgram.h
@@ -27,11 +24,11 @@ add_executable(Assignment2
         assignment2.cpp
 )
 
-target_include_directories(MyOpenGLProject PRIVATE
+target_include_directories(Assignment1 PRIVATE
         external/glad/include
 )
 
-target_link_libraries(MyOpenGLProject
+target_link_libraries(Assignment1
         PRIVATE
         ${OpenCV_LIBS}
         OpenGL::GL
@@ -53,10 +50,10 @@ target_link_libraries(Assignment2
         ${OpenCV_LIBS}
 )
 
-add_custom_command(TARGET MyOpenGLProject POST_BUILD # workaround for clion
+add_custom_command(TARGET Assignment1 POST_BUILD # workaround for clion
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/shaders"
-        "$<TARGET_FILE_DIR:MyOpenGLProject>/shaders"
+        "$<TARGET_FILE_DIR:Assignment1>/shaders"
 )
 
 add_custom_command(TARGET CameraCalibration POST_BUILD # workaround for clion

@@ -20,17 +20,12 @@ cmake --build ./build
 * hold copy of images/target.png into the webcam, then a cube with estimated pose should appear
 
 # Assignment 1
-`main.cpp` contains the first few OpenCV assignments, which you can ignore. `myfirstopenglprogram.cpp` is assignment 1.
 
 ## Compile and Run
 ```bash
 cmake -S . -B ./build
-
-# this line had a typo in the submission for assignment 1
 cmake --build ./build
-# originally it read "cmake -B ./build"
-
-./build/MyOpenGLProject
+./build/Assignment1
 ```
 
 ## usage
